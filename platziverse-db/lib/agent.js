@@ -4,7 +4,14 @@ module.exports = function setupAgent (agentModel) {
   function findById (id) {
     return agentModel.findById(id)
   }
-
+  function findByUuid (uuid) {
+    return agentModel.findOne({
+      where: { uuid }
+    })
+  }
+  function findAll () {
+    return agentModel.findAll()
+  }
   async function createOrUpdate (agent) {
     const cond = {
       where: {
@@ -25,6 +32,8 @@ module.exports = function setupAgent (agentModel) {
 
   return {
     findById,
+    findByUuid,
+    findAll,
     createOrUpdate
   }
 }

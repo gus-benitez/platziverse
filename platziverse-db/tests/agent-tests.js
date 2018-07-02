@@ -24,6 +24,7 @@ let uuidArgs = {
     uuid
   }
 }
+
 test.beforeEach(async () => {
   sandbox = sinon.createSandbox()
   agentStub = {
@@ -36,6 +37,9 @@ test.beforeEach(async () => {
   // Model findOne Stub
   agentStub.findOne = sandbox.stub()
   agentStub.findOne.withArgs(uuidArgs).returns(Promise.resolve(agentFixtures.byUuid(uuid)))
+  // Model findAll Stub
+  agentStub.findAll = sandbox.stub()
+  agentStub.findAll.returns(Promise.resolve(agentFixtures.all))
   // Model update Stub
   agentStub.update = sandbox.stub()
   agentStub.update.withArgs(single, uuidArgs).returns(Promise.resolve(single))
@@ -68,6 +72,23 @@ test.serial('Agent#findById', async t => {
   t.true(agentStub.findById.calledWith(id), 'findById should be called with specified id')
 
   t.deepEqual(agent, agentFixtures.ById(id), 'It should be the same in search by id')
+})
+
+test.serial('Agent#findByUuid', async t => {
+  let agent = await db.Agent.findByUuid(uuid)
+  t.true(agentStub.findOne.called, 'findOne should be called on model')
+  t.true(agentStub.findOne.calledOnce, 'findOne should be called once')
+  t.true(agentStub.findOne.calledWith(uuidArgs), 'findOne should be called with specified uuid')
+
+  t.deepEqual(agent, agentFixtures.byUuid(uuid), 'It should be the same in search by uuid')
+})
+
+test.serial('Agent#findAll', async t => {
+  let agent = await db.Agent.findAll()
+  t.true(agentStub.findAll.called, 'findAll should be called on model')
+  t.true(agentStub.findAll.calledOnce, 'findAll should be called once')
+
+  t.deepEqual(agent, agentFixtures.all, 'It should be the same in search by all')
 })
 
 test.serial('Agent#createOrUpdate - exists', async t => {
