@@ -36,10 +36,10 @@ module.exports = function setupAgent (agentModel) {
       }
     }
 
-    const existingAgent = await agentModel.findOne(cond)
+    const existingAgent = await agentModel.findOne(cond) // No es necesario await
 
     if (existingAgent) {
-      const update = await agentModel.update(agent, cond)
+      const update = await agentModel.update(agent, cond) // No es necesario await
       return update ? agentModel.findOne(cond) : existingAgent
     }
 

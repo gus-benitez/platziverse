@@ -36,6 +36,14 @@ let usernameArgs = {
     connected: true
   }
 }
+let newAgent = {
+  uuid: '123-456-789',
+  name: 'teste new',
+  username: 'teste new',
+  hostname: 'teste new',
+  pid: 0,
+  connected: false
+}
 
 test.beforeEach(async () => {
   sandbox = sinon.createSandbox()
@@ -59,6 +67,11 @@ test.beforeEach(async () => {
   // Model update Stub
   agentStub.update = sandbox.stub()
   agentStub.update.withArgs(single, uuidArgs).returns(Promise.resolve(single))
+  // Model create Stub
+  agentStub.create = sandbox.stub()
+  agentStub.create.withArgs(newAgent).returns(Promise.resolve({
+    toJSON () { return newAgent }
+  }))
 
   const setupDatabase = proxyequire('../', {
     './models/agent': () => agentStub,
@@ -133,4 +146,12 @@ test.serial('Agent#createOrUpdate - exists', async t => {
   t.true(agentStub.update.calledOnce, 'update should be called once')
 
   t.deepEqual(agent, single, 'Agent should be the same')
+})
+
+test.serial('Agent#createOrUpdate - new', async t => {
+  let agent = await db.Agent.createOrUpdate(newAgent)
+
+  t.true(agentStub.findOne.called, 'findOne should be called on model')
+  t.true(agentStub.findOne.calledOnce, 'findOne should be called once')
+  t.true(agentStub.create.calledOnce, 'create should be called once')
 })
