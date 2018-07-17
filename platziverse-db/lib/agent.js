@@ -20,6 +20,15 @@ module.exports = function setupAgent (agentModel) {
     }
     return agentModel.findAll(cond)
   }
+  function findByUsername (username) {
+    const cond = {
+      where: {
+        username: username,
+        connected: true
+      }
+    }
+    return agentModel.findAll(cond)
+  }
   async function createOrUpdate (agent) {
     const cond = {
       where: {
@@ -43,6 +52,7 @@ module.exports = function setupAgent (agentModel) {
     findByUuid,
     findAll,
     findConnected,
+    findByUsername,
     createOrUpdate
   }
 }

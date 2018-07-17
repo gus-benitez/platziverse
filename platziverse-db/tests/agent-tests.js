@@ -15,6 +15,7 @@ let metricStub = {
 let single = Object.assign({}, agentFixtures.single)
 let id = 1
 let uuid = 'yyy-yyy-yyy'
+let username = 'platzi'
 let agentStub = null
 let db = null
 let sandbox = null
@@ -26,6 +27,12 @@ let uuidArgs = {
 }
 let connectedArgs = {
   where: {
+    connected: true
+  }
+}
+let usernameArgs = {
+  where: {
+    username,
     connected: true
   }
 }
@@ -44,9 +51,11 @@ test.beforeEach(async () => {
   agentStub.findOne.withArgs(uuidArgs).returns(Promise.resolve(agentFixtures.byUuid(uuid)))
   // Model findAll Stub
   agentStub.findAll = sandbox.stub()
-  agentStub.findAll.returns(Promise.resolve(agentFixtures.all))
+  agentStub.findAll.withArgs().returns(Promise.resolve(agentFixtures.all))
   // Model findAll Stub, for the function findConnected
   agentStub.findAll.withArgs(connectedArgs).returns(Promise.resolve(agentFixtures.connected))
+  // Model findAll Stub, for the function findByUsername
+  agentStub.findAll.withArgs(usernameArgs).returns(Promise.resolve(agentFixtures.platzi))
   // Model update Stub
   agentStub.update = sandbox.stub()
   agentStub.update.withArgs(single, uuidArgs).returns(Promise.resolve(single))
@@ -105,6 +114,15 @@ test.serial('Agent#findConnected', async t => {
   t.true(agentStub.findAll.calledWith(connectedArgs), 'findAll should be called with specified connected True')
 
   t.deepEqual(agent, agentFixtures.connected, 'It should be the same in search of connected')
+})
+
+test.serial('Agent#findByUsername', async t => {
+  let agent = await db.Agent.findByUsername(username)
+  t.true(agentStub.findAll.called, 'findAll should be called on model')
+  t.true(agentStub.findAll.calledOnce, 'findAll should be called once')
+  t.true(agentStub.findAll.calledWith(usernameArgs), 'findAll should be called with specified usernameArgs')
+
+  t.deepEqual(agent, agentFixtures.platzi, 'It should be the same in search of connected')
 })
 
 test.serial('Agent#createOrUpdate - exists', async t => {
