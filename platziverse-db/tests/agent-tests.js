@@ -24,6 +24,11 @@ let uuidArgs = {
     uuid
   }
 }
+let connectedArgs = {
+  where: {
+    connected: true
+  }
+}
 
 test.beforeEach(async () => {
   sandbox = sinon.createSandbox()
@@ -40,6 +45,8 @@ test.beforeEach(async () => {
   // Model findAll Stub
   agentStub.findAll = sandbox.stub()
   agentStub.findAll.returns(Promise.resolve(agentFixtures.all))
+  // Model findAll Stub, for the function findConnected
+  agentStub.findAll.withArgs(connectedArgs).returns(Promise.resolve(agentFixtures.connected))
   // Model update Stub
   agentStub.update = sandbox.stub()
   agentStub.update.withArgs(single, uuidArgs).returns(Promise.resolve(single))
@@ -89,6 +96,15 @@ test.serial('Agent#findAll', async t => {
   t.true(agentStub.findAll.calledOnce, 'findAll should be called once')
 
   t.deepEqual(agent, agentFixtures.all, 'It should be the same in search by all')
+})
+
+test.serial('Agent#findConnected', async t => {
+  let agent = await db.Agent.findConnected()
+  t.true(agentStub.findAll.called, 'findAll should be called on model')
+  t.true(agentStub.findAll.calledOnce, 'findAll should be called once')
+  t.true(agentStub.findAll.calledWith(connectedArgs), 'findAll should be called with specified connected True')
+
+  t.deepEqual(agent, agentFixtures.connected, 'It should be the same in search of connected')
 })
 
 test.serial('Agent#createOrUpdate - exists', async t => {
