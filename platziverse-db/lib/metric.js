@@ -29,8 +29,21 @@ module.exports = function setupMetric (metricModel, agentModel) {
     })
   }
 
+  async function create (uuid, metric) {
+    const agent = await agentModel.findOne({
+      where: { uuid }
+    })
+    if (agent) {
+      Object.assign(metric, { agentUuid: agent.uuid })
+      // Lo anterior es igual a: metric.agentUuid = agent.uuid
+      const result = await metricModel.create(metric)
+      return result.toJSON()
+    }
+  }
+
   return {
     findTypeByAgentUuid,
-    findByTypeAgentUuid
+    findByTypeAgentUuid,
+    create
   }
 }

@@ -126,6 +126,7 @@ test.serial('Agent#findConnected', async t => {
   t.true(agentStub.findAll.calledOnce, 'findAll should be called once')
   t.true(agentStub.findAll.calledWith(connectedArgs), 'findAll should be called with specified connected True')
 
+  t.is(agent.length, agentFixtures.connected.length, 'agents should be the same length')
   t.deepEqual(agent, agentFixtures.connected, 'It should be the same in search of connected')
 })
 
@@ -143,7 +144,10 @@ test.serial('Agent#createOrUpdate - exists', async t => {
 
   t.true(agentStub.findOne.called, 'findOne should be called on model')
   t.true(agentStub.findOne.calledTwice, 'findOne should be called twice')
+  t.true(agentStub.findOne.calledWith(uuidArgs), 'findOne should be called with specified uuidArgs')
+  t.true(agentStub.update.called, 'update should be called on model')
   t.true(agentStub.update.calledOnce, 'update should be called once')
+  t.true(agentStub.update.calledWith(single, uuidArgs), 'update should be called with specified single,uuidArgs')
 
   t.deepEqual(agent, single, 'Agent should be the same')
 })
@@ -153,5 +157,10 @@ test.serial('Agent#createOrUpdate - new', async t => {
 
   t.true(agentStub.findOne.called, 'findOne should be called on model')
   t.true(agentStub.findOne.calledOnce, 'findOne should be called once')
+  t.true(agentStub.findOne.calledWith({where: { uuid: '123-456-789' }}), 'findOne should be called with specified')
+  t.true(agentStub.create.called, 'create should be called on model')
   t.true(agentStub.create.calledOnce, 'create should be called once')
+  t.true(agentStub.create.calledWith(newAgent), 'create should be called with specified newAgent')
+
+  t.deepEqual(agent, newAgent, 'Agent should be the same')
 })
