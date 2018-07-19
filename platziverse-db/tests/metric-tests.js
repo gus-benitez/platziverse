@@ -46,8 +46,7 @@ let typeAgentArgs = {
 }
 let newMetric = {
   type: 'Type 123',
-  value: 'Value 123',
-  agentUuid: uuid
+  value: 'Value 123'
 }
 
 test.beforeEach(async () => {
