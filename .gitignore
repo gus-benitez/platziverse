@@ -63,3 +63,5 @@ typings/
 # Carpeta específica de VSCode
 .vscode/
 
+# Archivos de Redis
+*.rdb
