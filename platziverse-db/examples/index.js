@@ -1,16 +1,11 @@
 'use strict'
 
 const db = require('../')
+const getConfig = require('../lib/config')
 
 async function run () {
   // Creamos el objeto de configuración para conectarse a la base de datos.
-  const config = {
-    database: process.env.DB_NAME || 'platziverse',
-    username: process.env.DB_USER || 'platzi',
-    password: process.env.DB_PASS || 'platzi',
-    host: process.env.DB_HOST || 'localhost',
-    dialect: 'postgres'
-  }
+  const config = getConfig()
   // Obtenemos los servicios de Agente y Métrica
   const {Agent, Metric} = await db(config).catch(handleFatalError)
 

@@ -5,6 +5,7 @@ const mosca = require('mosca')
 const redis = require('redis')
 const chalk = require('chalk')
 const db = require('platziverse-db')
+const getConfig = require('../platziverse-db/lib/config')
 
 const { parsePayload } = require('./utils')
 
@@ -17,14 +18,10 @@ const settings = {
   port: 1883,
   backend
 }
-const config = {
-  database: process.env.DB_NAME || 'platziverse',
-  username: process.env.DB_USER || 'platzi',
-  password: process.env.DB_PASS || 'platzi',
-  host: process.env.DB_HOST || 'localhost',
-  dialect: 'postgres',
+
+const config = getConfig({
   logging: s => debug(s)
-}
+})
 
 const server = new mosca.Server(settings)
 const clients = new Map()
