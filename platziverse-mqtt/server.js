@@ -114,7 +114,22 @@ server.on('published', async (packet, client) => {
           })
         }
 
-        // Store Metrics
+        // Store Metrics in Parallel
+        const saveMetricsPromises = payload.metrics.map(async (metric) => {
+          let createdMetric
+          try {
+            createdMetric = await Metric.create(agent.uuid, metric)
+          } catch (err) {
+            return handleError(err)
+          }
+          debug(`Metric ${createdMetric.id} saved on agent ${agent.uuid}`)
+        })
+        try {
+          await Promise.all(saveMetricsPromises)
+        } catch (err) {
+          return handleError(err)
+        }
+        /* --- Store Metrics in Series ---
         for (let metric of payload.metrics) {
           // For Of, soporta async await
           let m
@@ -125,6 +140,7 @@ server.on('published', async (packet, client) => {
           }
           debug(`Metric ${m.id} saved on agent ${agent.uuid}`)
         }
+        */
       }
       break
     default:
