@@ -2,6 +2,7 @@
 
 const debug = require('debug')('platziverse:api:routes')
 const express = require('express')
+const {AgentNotFoundError, MetricsNotFoundError, NotAuthorizedError, NotAuthenticatedError} = require('./custom-error')
 
 const api = express.Router() // Creamos una instancia de la Clase Router de Express
 
@@ -13,9 +14,15 @@ api.get('/agents', (req, res) => {
 })
 
 // Retorna un agente en particular
-api.get('/agent/:uuid', (req, res) => {
+api.get('/agent/:uuid', (req, res, next) => {
   const { uuid } = req.params
-  res.send({uuid}) // Respondemos con el uuid que obtuvimos
+
+  // Ejemplo para forzar el error
+  if (uuid !== 'yyy') {
+    return next(new Error('Agent not found'))
+  }
+
+  res.send({ uuid }) // Respondemos con el uuid que obtuvimos
 })
 
 // Retorna que metricas tiene reportadas un agente específico
