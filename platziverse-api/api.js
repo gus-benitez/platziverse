@@ -19,7 +19,9 @@ api.get('/agent/:uuid', (req, res, next) => {
 
   // Ejemplo para forzar el error
   if (uuid !== 'yyy') {
-    return next(new Error('Agent not found'))
+    // return next(new Error('Agent not found'))
+    const errorAgent = new AgentNotFoundError(uuid)
+    return next(errorAgent)
   }
 
   res.send({ uuid }) // Respondemos con el uuid que obtuvimos
