@@ -32,10 +32,18 @@ function handleFatalError (err) {
   console.error(err.stack)
   process.exit(1)
 }
-// Manejo de errores global de la la aplicación
-process.on('uncaughtException', handleFatalError)
-process.on('unhandledRejection', handleFatalError)
 
-server.listen(port, () => {
-  console.log(`${chalk.green('[platziverse-api]')} Server listening on port ${port}`)
-})
+if (!module.parent) {
+  // Si no es un módulo padre, lanzamos el servidor.
+  // O sea si no es requerido server.js, ingresa por esta sección.
+
+  // Manejo de errores global de la la aplicación
+  process.on('uncaughtException', handleFatalError)
+  process.on('unhandledRejection', handleFatalError)
+
+  server.listen(port, () => {
+    console.log(`${chalk.green('[platziverse-api]')} Server listening on port ${port}`)
+  })
+}
+
+module.exports = server
