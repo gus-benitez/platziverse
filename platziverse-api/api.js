@@ -78,7 +78,7 @@ api.get('/metrics/:uuid', async (req, res, next) => {
   }
 
   if (!metricTypes || metricTypes.length === 0) {
-    return next(new Error(`The Agent (${uuid}) has no metrics.`))
+    return next(new Error(`Metrics not found for agent ${uuid}`))
   }
 
   res.send(metricTypes)
