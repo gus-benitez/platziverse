@@ -4,14 +4,20 @@ const test = require('ava')
 const request = require('supertest')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
+const util = require('util')
 
 const agentFixtures = require('./fixtures/agent')
 const metricFixtures = require('./fixtures/metric')
 const {AgentNotFoundError} = require('../custom-error')
+const config = require('../config')
+const auth = require('../auth')
+
+const sign = util.promisify(auth.sign)
 
 let sandbox = null // sandbox es un ambiente específico de Sinon
 let server = null
 let dbStub = null // Stub del objeto de base de datos
+let token = null
 let AgentStub = {}
 let MetricStub = {}
 let uuid = 'yyy-yyy-yyy'
@@ -37,6 +43,9 @@ test.beforeEach(async () => {
   MetricStub.findTypeByAgentUuid = sandbox.stub()
   MetricStub.findTypeByAgentUuid.withArgs(uuid).returns(Promise.resolve(metricFixtures.byAgentUuid(uuid)))
 
+  // Generamos un token específico.
+  token = await sign({admin: true, username: 'platzi'}, config.auth.secret)
+
   const api = proxyquire('../api', {
     'platziverse-db': dbStub // Cada vez que se requiera 'platziverse-db', se debe retornar dbStub
   })
@@ -55,6 +64,7 @@ test.serial.cb('/api/agents', t => {
   // Y le aplicamos métodos encadenados...
   request(server)
     .get('/api/agents') // Hacemos una peticion a la ruta '/api/agents'
+    .set('Authorization', `Bearer ${token}`) // Seteamos el header de Autorización para enviar el token creado.
     .expect(200) // Espero que esto retorne 200 (exitoso)
     .expect('Content-Type', /json/) // Espero que el tipo de contenido sea JSON
     .end((err, res) => { // Esta sección es cuando termine, hago mas validaciones
@@ -127,5 +137,10 @@ test.serial.cb('/api/metrics/:uuid - not found', t => {
     })
 })
 
-test.serial.todo('api/metrics/:uuid/:type')
-test.serial.todo('api/metrics/:uuid/:type - not found')
+test.serial.todo('/api/metrics/:uuid/:type')
+test.serial.todo('/api/metrics/:uuid/:type - not found')
+
+test.serial.todo('/api/agents - not authorized')
+test.serial.todo('/api/agent/:uuid - not authorized')
+test.serial.todo('/api/metrics/:uuid - not authorized')
+test.serial.todo('/api/metrics/:uuid/:type - not authorized')

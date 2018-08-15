@@ -38,7 +38,7 @@ api.get('/agents', auth(config.auth), async (req, res, next) => {
   debug('A request has come to /agents')
 
   // Express-jwt, setea la propiedad ‘user’, dentro del request.
-  const { user } = req  
+  const { user } = req
   if (!user || !user.username) {
     return next(new Error('Not authorized'))
   }
