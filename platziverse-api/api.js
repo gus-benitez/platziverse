@@ -2,6 +2,9 @@
 
 const debug = require('debug')('platziverse:api:routes')
 const express = require('express')
+const auth = require('express-jwt')
+const config = require('./config')
+
 const {AgentNotFoundError, MetricsNotFoundError} = require('./custom-error')
 const db = require('platziverse-db')
 const getConfig = require('../platziverse-db/lib/config')
@@ -31,12 +34,22 @@ api.use('*', async (req, res, next) => { // '*' significa para todas las rutas.
 
 // Definimos las rutas
 // Retorna los agentes conectados en nuestro servidor
-api.get('/agents', async (req, res, next) => {
+api.get('/agents', auth(config.auth), async (req, res, next) => {
   debug('A request has come to /agents')
+
+  // Express-jwt, setea la propiedad ‘user’, dentro del request.
+  const { user } = req  
+  if (!user || !user.username) {
+    return next(new Error('Not authorized'))
+  }
 
   let agents = []
   try {
-    agents = await Agent.findConnected()
+    if (user.admin) {
+      agents = await Agent.findConnected()
+    } else {
+      agents = await Agent.findByUsername(user.username)
+    }
   } catch (err) {
     return next(err)
   }

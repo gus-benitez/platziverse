@@ -23,6 +23,8 @@
     "chalk": "^2.4.1",
     "debug": "^3.1.0",
     "express": "^4.16.3",
+    "express-jwt": "^5.3.1",
+    "jsonwebtoken": "^8.3.0",
     "platziverse-db": "file:../platziverse-db"
   }
 }
