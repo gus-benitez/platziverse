@@ -3,6 +3,7 @@
 const debug = require('debug')('platziverse:api:routes')
 const express = require('express')
 const auth = require('express-jwt')
+const guard = require('express-jwt-permissions')()
 const config = require('./config')
 
 const {AgentNotFoundError, MetricsNotFoundError} = require('./custom-error')
@@ -79,7 +80,7 @@ api.get('/agent/:uuid', async (req, res, next) => {
 })
 
 // Retorna que metricas tiene reportadas un agente específico
-api.get('/metrics/:uuid', async (req, res, next) => {
+api.get('/metrics/:uuid', auth(config.auth), guard.check(['metrics:read']), async (req, res, next) => {
   const { uuid } = req.params
   debug(`Request has come to /metrics/${uuid}`)
 
