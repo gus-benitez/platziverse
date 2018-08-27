@@ -4,9 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
   <title>Platziverse</title>
 </head>
 <body>
   <H1>Platziverse</H1>
+
+  <script type="text/javascript">
+    const socket = io()
+
+    socket.on('agent/message', function(payload){
+      console.log(payload)
+    })
+
+    setTimeout( function() {
+      socket.emit('agent/message', 'Hello server!')
+    }, 5000)
+  </script>
 </body>
 </html>
