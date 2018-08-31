@@ -7,6 +7,12 @@
       <button v-on:click="toggleMetrics" class="button">Toggle Metrics</button>
       <div v-show="showMetrics">
         <h3 class="metrics-title">Metrics</h3>
+        <metric v-for="metric in metrics"
+          :uuid="uuid"
+          v-bind:type="metric.type"
+          v-bind:key="metric.type"
+          :socket="socket">
+        </metric>
       </div>
     </div>
     <p v-if="error">{{error}}</p>
@@ -56,7 +62,29 @@
         this.name = agent.name
         this.hostname = agent.hostname
         this.connected = agent.connected
-        this.pid = agent.pid        
+        this.pid = agent.pid
+
+        this.loadMetrics()
+      },
+
+      async loadMetrics () {
+        const {uuid} = this
+        const options = {
+          method: 'GET',
+          url: `http://localhost:8080/metrics/${uuid}`,
+          json: true
+        }
+
+        let metrics
+        try {
+          metrics = await request(options)
+        } catch (err) {
+          this.error = err.error.error
+          return
+        }
+        this.metrics = metrics
+        console.log(metrics);
+        
       },
 
       toggleMetrics() {

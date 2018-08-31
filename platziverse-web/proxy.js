@@ -51,7 +51,27 @@ api.get('/agent/:uuid', async (req, res, next) => {
   res.send(result)
 })
 
-api.get('/metrics/:uuid', (req, res) => {})
+api.get('/metrics/:uuid', async (req, res, next) => {
+  const {uuid} = req.params
+
+  const options = {
+    method: 'GET',
+    url: `${endpoint}/api/metrics/${uuid}`,
+    headers: {
+      'Authorization': `Bearer ${apiToken}`
+    },
+    json: true
+  }
+
+  let result
+  try {
+    result = await request(options)
+  } catch (err) {
+    return next(err)
+  }
+
+  res.send(result)
+})
 
 api.get('/metrics/:uuid/:type', (req, res) => {})
 

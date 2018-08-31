@@ -1,7 +1,5 @@
 <template>
   <div>
-    <H2>Agents</H2>
-
     <agent v-for="agent in agents" :key="agent.uuid"
       v-bind:uuid="agent.uuid"
       :socket="socket">
