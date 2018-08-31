@@ -2,22 +2,11 @@
   <div>
     <H2>Agents</H2>
 
-    <p v-for="agent in agents">
-      Name: {{agent.name}}
-      <br>Username: {{agent.username}}
-      <br>Pid: {{agent.pid}}
-      <br>Uuid: {{agent.uuid}}
-      <br>Hostname: {{agent.hostname}}
-      <hr>
-    </p>
-<!--
-    <agent
-      v-for="agent in agents"
-      :uuid="agent.uuid"
-      :key="agent.uuid"
+    <agent v-for="agent in agents" :key="agent.uuid"
+      v-bind:uuid="agent.uuid"
       :socket="socket">
     </agent>
--->
+
     <p v-if="error">{{error}}</p>
   </div>
 </template>
@@ -54,8 +43,6 @@
           return
         }
         this.agents = agents
-        console.log(agents);
-        
       }
     }
   }
