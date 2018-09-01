@@ -73,6 +73,26 @@ api.get('/metrics/:uuid', async (req, res, next) => {
   res.send(result)
 })
 
-api.get('/metrics/:uuid/:type', (req, res) => {})
+api.get('/metrics/:uuid/:type', async (req, res, next) => {
+  const {uuid, type} = req.params
+
+  const options = {
+    method: 'GET',
+    url: `${endpoint}/api/metrics/${uuid}/${type}`,
+    headers: {
+      'Authorization': `Bearer ${apiToken}`
+    },
+    json: true
+  }
+
+  let result
+  try {
+    result = await request(options)
+  } catch (err) {
+    return next(err)
+  }
+
+  res.send(result)
+})
 
 module.exports = api
