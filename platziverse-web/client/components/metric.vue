@@ -2,7 +2,11 @@
   <div class="metric">
     <h3 class="metric-type">{{ type }}</h3>
 
-    <h2>Labels: {{ labels }} - Data: {{ data }}</h2>
+    <line-chart
+      :chart-data="datacollection"
+      :options="{responsive: true}"
+      :width="400" :height="200">
+    </line-chart>
 
     <p v-if="error">{{error}}</p>
   </div>
@@ -11,6 +15,8 @@
 <script>
   const request = require('request-promise-native')
   const moment = require('moment')
+  const randomColor = require('random-material-color')
+  const LineChart = require('./line-chart')
 
   module.exports = {
     name: 'metric',
@@ -20,10 +26,11 @@
       return {
         datacollection: {},
         error: null,
-        color: null,
-        labels: null,
-        data: null
+        color: null
       }
+    },
+    components: {
+      LineChart
     },
 
     mounted() {
@@ -33,7 +40,7 @@
     methods: {
       async initialize() {
         const {uuid, type} = this
-        
+        this.color = randomColor.getColor()
         const options = {
           method: 'GET',
           url: `http://localhost:8080/metrics/${uuid}/${type}`,
@@ -50,15 +57,20 @@
 
         const labels = []
         const data = []
-
         if (Array.isArray(result)) {
           result.forEach(m => {
             labels.push(moment(m.createdAt).format('HH:mm:ss'))
             data.push(m.value)
           })
         }
-        this.labels = labels
-        this.data = data
+        this.datacollection = {
+          labels,
+          datasets: [{
+            backgroundColor: this.color,
+            label: type,
+            data
+          }]
+        }
       },
 
       handleError (err) {
