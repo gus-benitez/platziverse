@@ -83,6 +83,19 @@
           return
         }
         this.metrics = metrics
+
+        this.startRealtime()
+      },
+
+      startRealtime () {
+        const {uuid, socket} = this
+
+        socket.on('agent/disconnected', payload => {
+          // Filtramos para trabajar solo los mensajes de este agente
+          if (payload.agent.uuid === uuid) {
+            this.connected = false
+          }
+        })
       },
 
       toggleMetrics() {
