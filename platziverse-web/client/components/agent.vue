@@ -83,8 +83,6 @@
           return
         }
         this.metrics = metrics
-        console.log(metrics);
-        
       },
 
       toggleMetrics() {

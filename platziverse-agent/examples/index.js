@@ -40,5 +40,5 @@ agent.on('agent/message', payload => {
 function handler (payload) {
   console.log('fn handler: ', payload)
 }
-
-setTimeout(() => agent.disconnect(), 4000)
+// Modificamos el ejemplo para que no se desconecte
+// setTimeout(() => agent.disconnect(), 4000)

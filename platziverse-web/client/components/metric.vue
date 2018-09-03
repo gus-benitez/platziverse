@@ -20,7 +20,7 @@
 
   module.exports = {
     name: 'metric',
-    props: [ 'uuid', 'type' ],
+    props: [ 'uuid', 'type', 'socket' ],
 
     data() {
       return {
@@ -71,6 +71,46 @@
             data
           }]
         }
+
+        this.startRealtime()
+      },
+
+      startRealtime () {
+        const {type, uuid, socket} = this
+
+        socket.on('agent/message', payload => {
+          // Filtramos para trabajar solo los mensajes de este agente
+          if (payload.agent.uuid === uuid) {
+            // Obtenemos la información de la métrica del tipo específico
+            
+            const metric = payload.metrics.find(m => m.type === type)
+
+            // Vamos a obtener una copia de los label y data del gráfico.
+            const labels = this.datacollection.labels
+            const data = this.datacollection.datasets[0].data
+            // Usamos [0], porque para este caso solo tenemos un solo datasets
+
+            // Hacemos que muestre como minimo 20 metricas
+            const length = labels.length || data.length
+            if (length >= 20) {
+              labels.shift()
+              data.shift()
+            }
+
+            // Add new elements
+            labels.push(moment(metric.createdAt).format('HH:mm:ss'))
+            data.push(metric.value)
+
+            this.datacollection = {
+              labels,
+              datasets: [{
+                backgroundColor: this.color,
+                label: type,
+                data
+              }]
+            }
+          }
+        })
       },
 
       handleError (err) {
