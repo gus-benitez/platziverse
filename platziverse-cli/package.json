@@ -14,6 +14,7 @@
     "standard": "^12.0.1"
   },
   "dependencies": {
+    "platziverse-agent": "file:../platziverse-agent",
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.8.6",
     "minimist": "^1.2.0"
