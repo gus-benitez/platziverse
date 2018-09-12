@@ -21,6 +21,7 @@
 
 <script>
   const request = require('request-promise-native')
+  const {serverHost} = require('../../config')
 
   export default {
     props: [ 'uuid', 'socket' ],
@@ -47,7 +48,7 @@
         
         const options = {
           method: 'GET',
-          url: `http://localhost:8080/agent/${uuid}`,
+          url: `${serverHost}/agent/${uuid}`,
           json: true
         }
 
@@ -71,7 +72,7 @@
         const {uuid} = this
         const options = {
           method: 'GET',
-          url: `http://localhost:8080/metrics/${uuid}`,
+          url: `${serverHost}/metrics/${uuid}`,
           json: true
         }
 
